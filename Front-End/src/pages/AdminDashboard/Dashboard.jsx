@@ -9,16 +9,17 @@ const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [editUser, setEditUser] = useState(null);
   const [formData, setFormData] = useState({ name: "", email: "" });
-  const [newModal,setNewModal] = useState(false)
-  const [newUser,setNewUser] = useState({email:'',name:'',password:''})
-  const [error,setError] = useState({email:'',name:'',password:''})
+  const [newModal, setNewModal] = useState(false);
+  const [newUser, setNewUser] = useState({ email: "", name: "", password: "" });
+  const [error, setError] = useState({ email: "", name: "", password: "" });
+  const [searchQuery, setSearchQuery] = useState("");
   const handleEditClick = (user) => {
     setEditUser(user);
     setFormData({ name: user.name, email: user.email });
     setModalOpen(true);
   };
   const handleClose = () => setModalOpen(false);
-  const closeNewModal = ()=> setNewModal(false)
+  const closeNewModal = () => setNewModal(false);
   useEffect(() => {
     const admin = JSON.parse(localStorage.getItem("admin"));
     console.log("admin is", admin);
@@ -85,46 +86,53 @@ const Dashboard = () => {
     }
   };
 
-  const handleNewModal = ()=>{
-    setNewModal(true)
-  }
+  const handleNewModal = () => {
+    setNewModal(true);
+  };
 
-  const validate = ()=>{
-     const newError = {email:'',name:'',password:''}
-    let isValidate = true
+  const validate = () => {
+    const newError = { email: "", name: "", password: "" };
+    let isValidate = true;
 
-    if(!newUser.email){
-      newError.email = 'Email is required'
-      isValidate = false
+    if (!newUser.email) {
+      newError.email = "Email is required";
+      isValidate = false;
     }
-    if(!newUser.name){
-      newError.name = 'Name is required'
-      isValidate = false
+    if (!newUser.name) {
+      newError.name = "Name is required";
+      isValidate = false;
     }
-    if(!newUser.password){
-      newError.password = 'Password is required'
-      isValidate = false
+    if (!newUser.password) {
+      newError.password = "Password is required";
+      isValidate = false;
     }
-    setError(newError)
-    return isValidate
-  }
+    setError(newError);
+    return isValidate;
+  };
 
-  const handleNewUserSave = async(e)=>{
-    e.preventDefault()
-    if(validate()){
+  const handleNewUserSave = async (e) => {
+    e.preventDefault();
+    if (validate()) {
       try {
-         const response = await api.post('/admin/addUser',newUser)
-      console.log(response)
-      Swal.fire(response.data.msg)
-      setNewModal(false)
-      setNewUser({email:'',name:'',password:''})     
-      fetchUser()
+        const response = await api.post("/admin/addUser", newUser);
+        console.log(response);
+        Swal.fire(response.data.msg);
+        setNewModal(false);
+        setNewUser({ email: "", name: "", password: "" });
+        fetchUser();
       } catch (error) {
-        console.log(error)
-        Swal.fire(error.response.data.msg)
+        console.log(error);
+        Swal.fire(error.response.data.msg);
       }
     }
-  }
+  };
+
+  const filterUserData = userDatas.filter((user) => {
+    return (
+      user.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  });
   return (
     <>
       <div className="admin-dashboard">
@@ -135,10 +143,17 @@ const Dashboard = () => {
               <div className="card-header">
                 <h3>User List</h3>
                 <div className="search-bar">
-                  <input type="text" placeholder="Search users..." />
+                  <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
                   <button className="search-button">🔍</button>
                 </div>
-                <button className="add-user" onClick={handleNewModal}>Add User</button>
+                <button className="add-user" onClick={handleNewModal}>
+                  Add User
+                </button>
               </div>
 
               <div className="table-container">
@@ -152,52 +167,53 @@ const Dashboard = () => {
                     </tr>
                   </thead>
                   <tbody>
-                    {userDatas.map((users, index) => (
-                      <tr key={index}>
-                        <td>
-                          <div className="user-info">
-                            <div className="user-avatar">
-                              <img
-                                src={`http://localhost:2323/uploads/${users?.profilePic?.[0]}`}
-                                alt="Profile"
-                                className="w-10 h-10 rounded-full object-cover"
-                                style={{
-                                  width: "40px",
-                                  height: "40px",
-                                  borderRadius: "50%",
-                                  objectFit: "cover",
-                                }}
-                              />
+                    {(searchQuery ? filterUserData : userDatas).map(
+                      (users, index) => (
+                        <tr key={index}>
+                          <td>
+                            <div className="user-info">
+                              <div className="user-avatar">
+                                <img
+                                  src={`http://localhost:2323/uploads/${users?.profilePic?.[0]}`}
+                                  alt="Profile"
+                                  className="w-10 h-10 rounded-full object-cover"
+                                  style={{
+                                    width: "40px",
+                                    height: "40px",
+                                    borderRadius: "50%",
+                                    objectFit: "cover",
+                                  }}
+                                />
+                              </div>
+                              <span>{users?.name}</span>
                             </div>
-                            <span>{users?.name}</span>
-                          </div>
-                        </td>
-                        <td>{users?.email}</td>
-                        <td>
-                          {new Date(users?.createdAt).toLocaleDateString()}
-                        </td>
-                        <td>
-                          <div className="action-buttons">
-                            <button
-                              className="edit-btn"
-                              onClick={() => handleEditClick(users)}
-                            >
-                              Edit
-                            </button>
-                            <button
-                              className="delete-btn"
-                              onClick={() => deleteuser(users._id)}
-                            >
-                              Delete
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
+                          </td>
+                          <td>{users?.email}</td>
+                          <td>
+                            {new Date(users?.createdAt).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <div className="action-buttons">
+                              <button
+                                className="edit-btn"
+                                onClick={() => handleEditClick(users)}
+                              >
+                                Edit
+                              </button>
+                              <button
+                                className="delete-btn"
+                                onClick={() => deleteuser(users._id)}
+                              >
+                                Delete
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )
+                    )}
                   </tbody>
                 </table>
               </div>
-
               <div className="pagination">
                 <div className="pagination-info">Showing 2 users</div>
                 <div className="pagination-controls">
@@ -220,7 +236,7 @@ const Dashboard = () => {
             </button>
 
             <h3 className="modal-title">Edit Profile</h3>
-            <form >
+            <form>
               <div className="form-group">
                 <label className="form-label" htmlFor="name">
                   Name
@@ -266,8 +282,6 @@ const Dashboard = () => {
         </div>
       )}
 
-
-
       {newModal && (
         <div className="modal-overlay">
           <div className="modal-content">
@@ -285,10 +299,12 @@ const Dashboard = () => {
                   id="name"
                   name="name"
                   className="form-input"
-                   value={newUser.name}
-                   onChange={(e)=> setNewUser({...newUser,name:e.target.value})}
+                  value={newUser.name}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, name: e.target.value })
+                  }
                 />
-                {error && <p style={{color:'red'}}>{error.name}</p>}
+                {error && <p style={{ color: "red" }}>{error.name}</p>}
               </div>
 
               <div className="form-group">
@@ -301,9 +317,11 @@ const Dashboard = () => {
                   name="email"
                   className="form-input"
                   value={newUser.email}
-                  onChange={(e)=> setNewUser({...newUser,email:e.target.value})}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, email: e.target.value })
+                  }
                 />
-                {error && <p style={{color:'red'}}>{error.email}</p>}
+                {error && <p style={{ color: "red" }}>{error.email}</p>}
               </div>
               <div className="form-group">
                 <label className="form-label" htmlFor="email">
@@ -315,9 +333,11 @@ const Dashboard = () => {
                   name="password"
                   className="form-input"
                   value={newUser.password}
-                  onChange={(e)=> setNewUser({...newUser,password:e.target.value})}
+                  onChange={(e) =>
+                    setNewUser({ ...newUser, password: e.target.value })
+                  }
                 />
-                {error && <p style={{color:'red'}}>{error.password}</p>}
+                {error && <p style={{ color: "red" }}>{error.password}</p>}
               </div>
             </form>
 

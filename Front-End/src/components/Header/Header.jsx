@@ -7,21 +7,27 @@ function Header() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [userData,setData] = useState(null)
-  console.log('user data is',userData)
-  const { user } = useSelector((state) => state.user.user);
+  const {user} = useSelector((state) => state.user);
+    useEffect(()=>{
+      if(!user){
+        navigate('/login')
+      }
+    })
   useEffect(()=>{
-    api.get(`/auth/userdata/${user.id}`)
+    api.get(`/auth/userdata/${user?.user?._id}`)
     .then((response)=> setData(response.data))
     .catch((error)=> console.log('header user data getting error',error))
-  },[user?.id])
+  },[user?.user?._id])
   const handleLogout = () => {  
     dispatch(logoutUser());
-    navigate('/');
+    localStorage.removeItem('user');
+    localStorage.removeItem('token')
+    navigate('/')
   };
 
   const handleProfile = () => {
-     if(user && user.id){
-        navigate(`/profile/${user.id}`)
+     if(user && user?.user?._id){
+        navigate(`/profile/${user?.user?._id}`)
      }
   };
 

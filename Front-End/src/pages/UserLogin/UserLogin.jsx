@@ -4,15 +4,23 @@ import "./UserLogin.css";
 import api from "../../api/api";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
-import {useDispatch } from 'react-redux'
-import { setUser } from "../../features/userSlice";
+import {useDispatch ,useSelector} from 'react-redux'
+import { setUser ,setToken} from "../../features/userSlice";
+import { useEffect } from "react";
 
 
 function UserLogin() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({ email: "", password: "" });
-  
+  const {user} = useSelector((state)=> state.user.user)
+
+  useEffect(()=>{
+    const users = JSON.parse(localStorage.getItem("user"));
+    if(user && users){
+      navigate('/home')
+    }
+  })
   const dispatch = useDispatch()
 
   const validate = () => {
@@ -45,14 +53,10 @@ function UserLogin() {
           backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
           close: true,
         }).showToast();
-        dispatch(setUser({
-          user:{
-            id:response.data.user._id,
-          name:response.data.user.name,
-          email:response.data.user.email,
-          },
-          token:response.data.token
-        }))
+       dispatch(setUser(response.data.user))
+       dispatch(setToken(response.data.token))
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('token',response.data.token)
         navigate('/home')
       } catch (error) {
         console.log("user login error", error);

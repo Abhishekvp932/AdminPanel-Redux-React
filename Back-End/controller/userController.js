@@ -101,7 +101,7 @@ const updateProfile = async (req, res) => {
 const getUserData = async(req,res)=>{
   try {
     const id = req.params.id
-   const user = await User.findOne({_id:id})
+   const user = await User.findById({_id:id})
    if(!user){
     return res.status(400).json({msg:'user not found'})
    }
