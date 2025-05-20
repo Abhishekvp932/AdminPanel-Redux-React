@@ -6,7 +6,11 @@ import api from "../../api/api";
 import Toastify from "toastify-js";
 import "toastify-js/src/toastify.css";
 
+import {useDispatch } from 'react-redux'
+import { setUser } from "../../features/userSlice";
 function UserSignup() {
+
+  const dispatch = useDispatch()
   const [form, setForm] = useState({
     name: "",
     email: "",
@@ -64,6 +68,14 @@ function UserSignup() {
           backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
           close: true,
         }).showToast();
+        dispatch(setUser({
+                  user:{
+                    id:response.data.user._id,
+                  name:response.data.user.name,
+                  email:response.data.user.email
+                  },
+                  token:response.data.token
+                }))
         navigate("/");
       } catch (error) {
         console.log("signup user error", error);
@@ -82,7 +94,7 @@ function UserSignup() {
 
   const navigate = useNavigate();
   const handleLogin = () => {
-    navigate("/login");
+    navigate("/");
   };
   return (
     <>

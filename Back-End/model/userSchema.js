@@ -14,6 +14,9 @@ const userSchema = new Schema ({
     password:{
         type:String,
         required:true
+    },
+    profilePic:{
+        type: [String],
     }
 }, {timestamps:true})
 
