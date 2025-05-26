@@ -34,8 +34,13 @@ const Dashboard = () => {
   }, []);
 
   const fetchUser = () => {
+    const token = localStorage.getItem("token");
     api
-      .get("/admin/userData")
+      .get("/admin/users", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
       .then((response) => {
         setUserDatas(response.data.userData);
         console.log(response.data);
@@ -47,6 +52,7 @@ const Dashboard = () => {
   };
 
   const deleteuser = (userId) => {
+    const token = localStorage.getItem('token')
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to delete this user?",
@@ -58,7 +64,11 @@ const Dashboard = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          const res = await api.delete(`/admin/userDelete/${userId}`);
+          const res = await api.delete(`/admin/users/${userId}`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
           console.log(res);
           Swal.fire(res.data.msg);
           fetchUser();
@@ -71,11 +81,13 @@ const Dashboard = () => {
   };
 
   const handleSave = async () => {
+    const token = localStorage.getItem('token')
     try {
-      const response = await api.put(
-        `/admin/userUpdate/${editUser._id}`,
-        formData
-      );
+      const response = await api.put( `/admin/users/${editUser._id}`,formData,{
+         headers: {
+        Authorization: `Bearer ${token}`,  
+      },
+      });
       console.log(response);
 
       Swal.fire(response.data.msg);
@@ -114,7 +126,7 @@ const Dashboard = () => {
     e.preventDefault();
     if (validate()) {
       try {
-        const response = await api.post("/admin/addUser", newUser);
+        const response = await api.post("/admin/users", newUser);
         console.log(response);
         Swal.fire(response.data.msg);
         setNewModal(false);
@@ -213,15 +225,6 @@ const Dashboard = () => {
                     )}
                   </tbody>
                 </table>
-              </div>
-              <div className="pagination">
-                <div className="pagination-info">Showing 2 users</div>
-                <div className="pagination-controls">
-                  <button>Previous</button>
-                  <button className="active">1</button>
-                  <button>2</button>
-                  <button>Next</button>
-                </div>
               </div>
             </div>
           </div>

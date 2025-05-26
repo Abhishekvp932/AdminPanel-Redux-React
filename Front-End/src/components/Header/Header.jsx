@@ -12,12 +12,29 @@ function Header() {
       if(!user){
         navigate('/login')
       }
+    },[user,navigate])
+
+
+
+  useEffect(() => {
+  const token = localStorage.getItem('token');
+  const userId = user?.user?._id;
+
+  if (userId && token) {
+    api.get(`/auth/userdata/${userId}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-  useEffect(()=>{
-    api.get(`/auth/userdata/${user?.user?._id}`)
-    .then((response)=> setData(response.data))
-    .catch((error)=> console.log('header user data getting error',error))
-  },[user?.user?._id])
+    .then(response => setData(response.data))
+    .catch(error => console.log('header user data getting error', error));
+  } else {
+    setData(null);
+  }
+}, [user?.user?._id]);
+
+
+
   const handleLogout = () => {  
     dispatch(logoutUser());
     localStorage.removeItem('user');

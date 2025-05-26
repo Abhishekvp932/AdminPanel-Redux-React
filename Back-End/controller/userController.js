@@ -6,7 +6,7 @@ const userSignup = async (req, res) => {
     const { name, email, password } = req.body;
     const existing = await User.findOne({ email: email });
     if (existing) {
-      return res.status(400).json({ msg: "User already exists" });
+      return res.status(409).json({ msg: "User already exists" });
     }
     const newUser = {
       name,
@@ -44,7 +44,7 @@ const userLogin = async (req, res) => {
       expiresIn: "1h",
     });
     return res
-      .status(201)
+      .status(200)
       .json({
         msg: "User logged successfully",
         token,
@@ -63,7 +63,7 @@ const getUserProfile = async (req, res) => {
       return res.status(400).json({ msg: "user not found" });
     }
     console.log(user);
-    return res.status(201).json({ user });
+    return res.status(200).json({ user });
   } catch (error) {
     console.log("user data fetching error", error);
     res.status(500).json({ msg: "server error" });
@@ -72,23 +72,22 @@ const getUserProfile = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const id = req.params.id;
-    const file = req.file;
+    
+   const user = await User.findOne({_id:id})
+   const updateData = {
+    name : req.body.name,
+    email : req.body.email,
+    profilePic:req.file ? req.file.filename : user.profilePic
+   }
 
-    if (!file) {
-      return res.status(400).json({ msg: "No file uploaded" });
-    }
-
-    const updateUser = await User.findByIdAndUpdate(
-      id,
-      { profilePic: file.filename },
-      { new: true }
-    );
-
+   const updateUser = await User.findByIdAndUpdate(id,updateData,{
+    new:true
+   })
     if (!updateUser) {
       return res.status(404).json({ msg: "User not found" });
     }
 
-    return res.status(201).json({
+    return res.status(200).json({
       msg: "Profile updated successfully",
       user: updateUser,
     });
@@ -100,22 +99,35 @@ const updateProfile = async (req, res) => {
 
 const getUserData = async(req,res)=>{
   try {
+    
     const id = req.params.id
    const user = await User.findById({_id:id})
    if(!user){
     return res.status(400).json({msg:'user not found'})
    }
-   return res.status(201).json({user})
+   return res.status(200).json({user})
   } catch (error) {
     console.log('user data fetching error in header',error)
       return res.status(500).json({msg:'internal server error'})
   }
 }
-
+const takeUserData = async(req,res)=>{
+  try {
+    const {id} = req.params
+     const user = await User.findById(id);
+   if(!user){
+    return res.status(400).json({msg:'user not found'})
+   }
+   return res.status(200).json({msg:"user data taken successfully",user})
+  } catch (error) {
+   console.log('user data taking error',error); 
+  }
+}
 module.exports = {
   userSignup,
   userLogin,
   getUserProfile,
   updateProfile,
   getUserData,
+  takeUserData,
 };

@@ -1,5 +1,5 @@
 import "./AdminLogin.css";
-import React,{useState} from "react";
+import React,{useState,useEffect} from "react";
 import api from "../../api/api";
 import { useNavigate } from "react-router-dom";
 
@@ -8,6 +8,16 @@ function UserLogin() {
   const navigate = useNavigate()
   const [form,setForm] = useState({email:'',password:''})
   const [errors,setErrors] = useState({email:'',password:''})
+
+useEffect(() => {
+    const admin = JSON.parse(localStorage.getItem("admin"));
+    console.log("admin is", admin);
+
+    if (admin) {
+      navigate("/dashboard");
+    }
+  }, [navigate]);
+
   const validate = ()=>{
       let isValidate = true    
       const newErrors = {email:'',password:''}

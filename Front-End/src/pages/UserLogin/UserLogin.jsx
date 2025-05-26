@@ -54,7 +54,7 @@ function UserLogin() {
           close: true,
         }).showToast();
        dispatch(setUser(response.data.user))
-       dispatch(setToken(response.data.token))
+       dispatch(setToken({token:response.data.token}))
         localStorage.setItem('user', JSON.stringify(response.data.user));
         localStorage.setItem('token',response.data.token)
         navigate('/home')

@@ -28,13 +28,30 @@ function UserSignup() {
     let isValid = true;
     const newError = { name: "", email: "", password: "", confirmPassword: "" };
 
+
+       const namePattern = /^[A-Za-z]+$/;
+       
     if (!form.name) {
       newError.name = "Name is required";
       isValid = false;
     }
+    if(!namePattern.test(form.name)){
+      newError.name = "Name should contain only letters and spaces"
+      isValid = false
+    }
+ const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
     if (!form.email) {
       newError.email = "Email is required";
       isValid = false;
+    }
+    if(!emailPattern.test(form.email)){
+      newError.email = "Please enter a valid email address"
+      isValid = false
+    }
+    if(form.password < 8){
+      newError.password = "Password must be at least 8 characters long"
+      isValid = false
     }
     if (!form.password) {
       newError.password = "Password is required";

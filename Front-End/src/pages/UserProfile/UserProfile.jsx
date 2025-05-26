@@ -4,7 +4,7 @@ import React,{useState,useEffect} from 'react'
 import {useParams,useNavigate} from 'react-router-dom'
 import api from '../../api/api'
 import Header from "../../components/Header/Header";
-
+import { useSelector } from "react-redux";
 const UserProfile = () => {
  const navigate = useNavigate()
   const {id} = useParams()
@@ -13,6 +13,18 @@ const UserProfile = () => {
   const [name,setName] = useState('')
   const [email,setEmail] = useState('')
   const [selectedfile,setSelectedFile] = useState(null) 
+  const {user} = useSelector((state)=> state.user.user)
+  useEffect(() => {
+  if(userData) {
+    setName(userData.user.name)
+    setEmail(userData.user.email)
+  }
+}, [userData]);
+  useEffect(()=>{
+    if(!user){
+      navigate('/')
+    }
+  })
   console.log(userData)
   useEffect(()=>{
     if(id){
@@ -108,7 +120,8 @@ const handleSaveProfile = async()=>{
           <label>Name</label>
           <input
             type="text"
-            value={userData?.user?.name}
+            value={name}
+            onChange={(e)=> setName(e.target.value)}
           />
         </div>
 
@@ -116,7 +129,8 @@ const handleSaveProfile = async()=>{
           <label>Email</label>
           <input
             type="email"
-            value={userData?.user?.email}
+            value={email}
+            onChange={(e)=> setEmail(e.target.value)}
           />
         </div>
 

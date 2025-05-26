@@ -1,3 +1,6 @@
+body{
+  overflow-x: hidden;
+}
 .signup-container {
   background-color: rgb(72, 232, 72);
   min-height: 100vh;
@@ -13,7 +16,7 @@
   border-radius: 30px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
   padding: 20px;
-  overflow-y: auto; /* Allow scrolling if content is too tall */
+ 
 }
 
 .login-header {

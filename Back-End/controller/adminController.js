@@ -18,7 +18,7 @@ const AdminLoginPage = async(req,res)=>{
         const token = jwt.sign({ id: admin._id }, process.env.JWT_SECRET, {
               expiresIn: "1h",
             });
-    return res.status(201).json({msg:'admin loggind successfully',admin:{ _id:admin._id,email:admin.email},token})
+    return res.status(200).json({msg:'admin loggind successfully',admin:{ _id:admin._id,email:admin.email},token})
     } catch (error) {
         console.log('admin loggined error',error)
         return res.status(500).json({msg:'internal server error'})
@@ -27,7 +27,7 @@ const AdminLoginPage = async(req,res)=>{
 const fetchingUserData = async(req,res)=>{
     try {
         const userData = await User.find({})
-        return res.status(201).json({msg:'user data fetched successfully',userData})
+        return res.status(200).json({msg:'user data fetched successfully',userData})
     } catch (error) {
         console.log('user data fetching error',error)
         return res.status(500).json({msg:'internal server error'})
@@ -39,7 +39,7 @@ const deleteuser = async(req,res)=>{
         console.log(id)
         await User.findByIdAndDelete(id)
 
-        return res.status(201).json({msg:'user deleted successfully'})
+        return res.status(200).json({msg:'user deleted successfully'})
     } catch (error) {
         console.log('user deleting error',error)
         return res.status(500).json({msg:'internal server error'})
@@ -51,7 +51,7 @@ const userUpdate = async(req,res)=>{
         const {name,email} = req.body
         
         const update = await User.findByIdAndUpdate(id,{name,email})
-        return res.status(201).json({msg:'user updated successfully'})
+        return res.status(200).json({msg:'user updated successfully'})
     } catch (error) {
         console.log('user updating error',error)
         return res.status(500).json({msg:'server error'})
@@ -72,7 +72,7 @@ const addNewUser = async(req,res)=>{
        }
        await User.insertMany(newuser)
 
-       return res.status(201).json({msg:'user add successfully'})
+       return res.status(200).json({msg:'user add successfully'})
 
     } catch (error) {
         console.log('new user adding error',error)
