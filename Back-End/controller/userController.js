@@ -1,6 +1,7 @@
 const User = require("../model/userSchema");
 const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
+const {hashPassword,checkPassword}  = require('../Helpers/bycript')
 const userSignup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -8,15 +9,16 @@ const userSignup = async (req, res) => {
     if (existing) {
       return res.status(409).json({ msg: "User already exists" });
     }
-    const newUser = {
+    const hashedPassword = await hashPassword(password)
+    const newUser = await User.create({
       name,
       email,
-      password,
-    };
+      password : hashedPassword,
+    });
     const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, {
       expiresIn: "1h",
     });
-    await User.insertMany(newUser);
+
     res
       .status(201)
       .json({
@@ -37,7 +39,9 @@ const userLogin = async (req, res) => {
       return res.status(400).json({ msg: "The user is not exists" });
     }
     console.log(user);
-    if (user.password !== password) {
+
+    const isPasswordValid = await checkPassword(password,user.password);
+    if (!isPasswordValid) {
       return res.status(400).json({ msg: "Password is not match" });
     }
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -116,7 +120,7 @@ const takeUserData = async(req,res)=>{
     const {id} = req.params
      const user = await User.findById(id);
    if(!user){
-    return res.status(400).json({msg:'user not found'})
+    return res.status(404).json({msg:'user not found'})
    }
    return res.status(200).json({msg:"user data taken successfully",user})
   } catch (error) {

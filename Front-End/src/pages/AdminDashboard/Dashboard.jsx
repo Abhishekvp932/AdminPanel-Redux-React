@@ -52,7 +52,7 @@ const Dashboard = () => {
   };
 
   const deleteuser = (userId) => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     Swal.fire({
       title: "Are you sure?",
       text: "Do you want to delete this user?",
@@ -81,12 +81,12 @@ const Dashboard = () => {
   };
 
   const handleSave = async () => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     try {
-      const response = await api.put( `/admin/users/${editUser._id}`,formData,{
-         headers: {
-        Authorization: `Bearer ${token}`,  
-      },
+      const response = await api.put(`/admin/users/${editUser._id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
       console.log(response);
 
@@ -126,15 +126,16 @@ const Dashboard = () => {
     e.preventDefault();
     if (validate()) {
       try {
-        const response = await api.post("/admin/users", newUser);
+        const response = await api.post("/admin/newUsers", newUser);
         console.log(response);
         Swal.fire(response.data.msg);
         setNewModal(false);
         setNewUser({ email: "", name: "", password: "" });
-        fetchUser();
+        setSearchQuery(""); 
+        fetchUser(); 
       } catch (error) {
         console.log(error);
-        Swal.fire(error.response.data.msg);
+        Swal.fire(error.response?.data?.msg || "Error adding user");
       }
     }
   };

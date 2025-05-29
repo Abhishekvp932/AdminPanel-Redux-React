@@ -6,5 +6,5 @@ router.post('/login',adminController.AdminLoginPage)
 router.get('/users',verifyToken,adminController.fetchingUserData)
 router.delete('/users/:id',verifyToken,adminController.deleteuser)
 router.put('/users/:id',verifyToken,adminController.userUpdate)
-router.post('/users',verifyToken,adminController.addNewUser)
+router.post('/newUsers',adminController.addNewUser)
 module.exports = router

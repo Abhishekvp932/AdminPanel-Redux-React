@@ -3,6 +3,7 @@ const Admin = require('../model/adminSchema')
 const User = require('../model/userSchema')
 const jwt = require("jsonwebtoken");
 const env = require("dotenv").config();
+const {hashPassword,checkPassword}  = require('../Helpers/bycript')
 const AdminLoginPage = async(req,res)=>{
     try {
         const {email,password} = req.body
@@ -39,7 +40,7 @@ const deleteuser = async(req,res)=>{
         console.log(id)
         await User.findByIdAndDelete(id)
 
-        return res.status(200).json({msg:'user deleted successfully'})
+        return res.status(204).json({msg:'user deleted successfully'})
     } catch (error) {
         console.log('user deleting error',error)
         return res.status(500).json({msg:'internal server error'})
@@ -59,16 +60,18 @@ const userUpdate = async(req,res)=>{
 }
 const addNewUser = async(req,res)=>{
     try {
+        console.log('1')
        const {name,email,password} = req.body
        console.log(req.body)
        const user = await User.findOne({email:email})
        if(user){
           return res.status(400).json({msg:'user already exists'})
        }
+       const hashedPassword = await hashPassword(password)
        const newuser = {
          email:email,
          name:name,
-         password:password,
+         password:hashedPassword,
        }
        await User.insertMany(newuser)
 
